@@ -1,13 +1,13 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
+		module.exports = factory(require("Phaser"));
 	else if(typeof define === 'function' && define.amd)
-		define("phaser-dev-tools", [], factory);
+		define("lulu", ["Phaser"], factory);
 	else if(typeof exports === 'object')
-		exports["phaser-dev-tools"] = factory();
+		exports["lulu"] = factory(require("Phaser"));
 	else
-		root["phaser-dev-tools"] = factory();
-})(this, function() {
+		root["lulu"] = factory(root["Phaser"]);
+})(this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -78,12 +78,12 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-// var Phaser = require('phaser');
 
 
-var version = __webpack_require__(1);
+var Phaser = __webpack_require__(1);
+var version = __webpack_require__(2);
 
-console.log('%c Phaser Dev Tools ' + version + ' ', 'background: #0E000F; color: #FF00FF');
+console.log('%c  Lulu ' + version + '  ', 'font-size: 12px; font-weight:bold; background: #000000; color: #FF00AE');
 
 // module.exports = function(){
 
@@ -94,6 +94,12 @@ console.log(version);
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -104,4 +110,4 @@ module.exports = "0.0.0";
 /***/ })
 /******/ ]);
 });
-//# sourceMappingURL=phaser-dev-tools.js.map
+//# sourceMappingURL=lulu.js.map

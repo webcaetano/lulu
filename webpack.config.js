@@ -5,7 +5,7 @@ var dist = JSON.parse(process.env.PROD_ENV || '0');
 
 var plugins = [];
 var entry = {
-	"phaser-dev-tools": './src/index.js',
+	"lulu": './src/index.js',
 }
 
 if(dist){
@@ -17,14 +17,14 @@ if(dist){
 		})
 	])
 
-	entry["phaser-dev-tools.min"] = './src/index.js';
+	entry["lulu.min"] = './src/index.js';
 }
 
 module.exports = {
 	entry,
 	plugins,
 	output: {
-		library:'phaser-dev-tools',
+		library:'lulu',
 		filename: 'build/[name].js',
 		sourceMapFilename: '[file].map',
 		umdNamedDefine: true,

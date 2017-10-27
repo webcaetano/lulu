@@ -1,7 +1,7 @@
-// var Phaser = require('phaser');
+var Phaser = require('phaser');
 var version = require('./version.json');
 
-console.log('%c Phaser Dev Tools '+version+' ', 'background: #0E000F; color: #FF00FF');
+console.log('%c  Lulu '+version+'  ', 'font-size: 12px; font-weight:bold; background: #000000; color: #FF00AE');
 
 // module.exports = function(){
 
