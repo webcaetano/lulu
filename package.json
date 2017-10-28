@@ -1,7 +1,9 @@
 {
   "name": "lulu",
   "version": "0.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "lodash": "^4.17.4"
+  },
   "scripts": {
     "start": "node_modules/nodemon/bin/nodemon.js --ignore 'build/' -e js --exec 'npm run dev'",
     "dev": "node_modules/.bin/webpack",
@@ -10,7 +12,6 @@
   "main": "build/phaser-dev-tools.js",
   "devDependencies": {
     "babel-loader": "^5.3.2",
-    "lodash": "^4.17.4",
     "nodemon": "^1.11.0",
     "tojson-loader": "^1.0.4",
     "webpack": "3.0.0"
