@@ -24,8 +24,9 @@ module.exports = function(game){
 
 	var setBody = function(pointer,options){
 		var size = 20;
+		var bkg = game.add.graphics(0,0)
 
-		pointer.beginFill('0xFFFFFF',1)
+		bkg.beginFill('0xFFFFFF',1)
 		.lineStyle(1,'0x2E2E2E',1)
 		.drawCircle(0,0,size);
 
@@ -39,16 +40,21 @@ module.exports = function(game){
 			carret.y = pos.y;
 			carret.angle = angle;
 
-			pointer.addChild(carret);
+			bkg.addChild(carret);
 		});
+
+		pointer.addChild(bkg);
 	}
 
 	var setBodyMini = function(pointer,options){
 		var size = 7;
+		var bkg = game.add.graphics(0,0)
 
-		pointer.beginFill('0xFF0000',0.3)
+		bkg.beginFill('0xFF0000',0.3)
 		.lineStyle(0.5,'0xFF0000',0.8)
 		.drawCircle(0,0,size);
+
+		pointer.addChild(bkg);
 	}
 
 	var setDrag = function(pointer,options){
@@ -104,12 +110,12 @@ module.exports = function(game){
 			y,
 			group,
 			active:true,
-			mini:true,
+			mini:false,
 		}
 
 		options = _.extend({},defaults,options);
 
-		var pointer = game.add.graphics(0,0);
+		var pointer = game.add.sprite(0,0);
 		pointer.onPress = new Phaser.Signal;
 		pointer.onRelease = new Phaser.Signal;
 		pointer.onChange = new Phaser.Signal;
@@ -126,6 +132,8 @@ module.exports = function(game){
 		pointer.y = options.y;
 
 		if(options.group) options.group.add(pointer);
+
+		pointer.setScaleMinMax(1,1);
 
 		return pointer;
 	}
