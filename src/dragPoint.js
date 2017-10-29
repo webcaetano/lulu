@@ -110,7 +110,7 @@ module.exports = function(game){
 			y,
 			group,
 			active:true,
-			mini:false,
+			mini:true,
 		}
 
 		options = _.extend({},defaults,options);
