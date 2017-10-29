@@ -4,7 +4,7 @@ var _ = require('lodash');
 module.exports = function(lulu,game){
 	var dragPointManager = require('./dragPoint')(game);
 
-	var setDrag = function(sprite,group,options){
+	var setDrag = function(sprite,options,folder){
 		if(!sprite.inputEnabled) sprite.inputEnabled = true;
 		if(sprite.input && sprite.input.enableDrag){
 			options.listen = true;
@@ -18,17 +18,17 @@ module.exports = function(lulu,game){
 		}
 
 		var self = {};
-		var update = function(){
-			group.x += sprite.x;
-			group.y += sprite.y;
-			sprite.x = 0;
-			sprite.y = 0;
-		}
+		// var update = function(){
+		// 	sprite.x += sprite.x;
+		// 	sprite.y += sprite.y;
+		// 	sprite.x = 0;
+		// 	sprite.y = 0;
+		// }
 
 		self.start = function(){
 			clear();
-			frames = game.make.group();
-			frames.update = update;
+			// frames = game.make.group();
+			// frames.update = update;
 		}
 
 		self.stop = function(){
@@ -41,8 +41,43 @@ module.exports = function(lulu,game){
 
 		sprite.events.onDragStop.add(function(){
 			self.stop();
-			update();
+			// update();
 		})
+	}
+
+	var setPivoter = function(sprite,options,folder){
+		var pivoter = dragPointManager.create();
+		sprite.addChild(pivoter);
+		var init = {x:0,y:0};
+
+
+		// console.log(pivoter)
+		// console.log(pivoter.worldRotation)
+		pivoter.onChange.add(function(){
+		})
+
+		pivoter.onPress.add(function(){
+			init = {x:pivoter.x,y:pivoter.y};
+		})
+
+		pivoter.onRelease.add(function(){
+			var diff = {
+				x:init.x-pivoter.x,
+				y:init.y-pivoter.y,
+			};
+
+			sprite.pivot.x = pivoter.x;
+			sprite.pivot.y = pivoter.y;
+			sprite.x -= diff.x;
+			sprite.y -= diff.y;
+		})
+
+		var pivotFolder = folder.addFolder('pivot');
+		var x = pivotFolder.add(sprite.pivot, 'x')
+		var y = pivotFolder.add(sprite.pivot, 'y')
+
+		x.listen();
+		y.listen();
 	}
 
 	return function(sprite,options,subfolder){
@@ -63,39 +98,30 @@ module.exports = function(lulu,game){
 
 		options = _.extend({},options,defaults);
 
-
-		var group = game.add.group();
-		sprite.parent.add(group);
-		group.add(sprite);
-
-		group.x = sprite.x;
-		group.y = sprite.y;
-		sprite.x = 0;
-		sprite.y = 0;
-
-		if(options.drag) setDrag(sprite,group,options);
-
-
 		var folder = panel.addFolder('Ajust Object '+_.padStart(lulu.indAjust,3,'0'));
 
-		var x = folder.add(group, 'x').step(1);
-		var y = folder.add(group, 'y').step(1);
+		if(options.drag) setDrag(sprite,options,folder);
+
+		var x = folder.add(sprite, 'x').step(1);
+		var y = folder.add(sprite, 'y').step(1);
 		if(options.angle) {
-			var angle = folder.add(group, 'angle').step(1);
+			var angle = folder.add(sprite, 'angle').step(1);
 		}
 
 		if(options.showToggle){
-			folder.add(group, 'visible');
+			folder.add(sprite, 'visible');
 			// obj.visible = options.hide.visible;
 		}
 
 		if(options.scale){
 			var scaleFolder = folder.addFolder('scale');
-			var scaleX = scaleFolder.add(group.scale, 'x').step(0.05).onChange(function(val){
-				group.scale.y = val;
+			var scaleX = scaleFolder.add(sprite.scale, 'x').step(0.05).onChange(function(val){
+				sprite.scale.y = val;
 			});
 			// var scaleY = scaleFolder.add(obj.scale, 'y').step(1);
 		}
+
+		setPivoter(sprite,options,folder);
 
 		if(options.listen){
 			x.listen();
@@ -103,10 +129,8 @@ module.exports = function(lulu,game){
 			if(options.angle) angle.listen();
 		}
 
-		var pointPivot = dragPointManager.create();
-		group.add(pointPivot);
-
 		if(options.open) folder.open();
+
 		return folder;
 	}
 }
