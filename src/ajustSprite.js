@@ -91,13 +91,17 @@ module.exports = function(lulu,game){
 	var setBasics = function(sprite,options,folder){
 		var x = folder.add(sprite, 'x').step(1);
 		var y = folder.add(sprite, 'y').step(1);
+		var color = {tint:'#FFFFFF'}
 		if(options.angle) {
 			var angle = folder.add(sprite, 'angle').step(1);
 		}
 
+		folder.addColor(color, 'tint').onChange(function(val){
+			sprite.tint = val.replace('#','0x');
+		});
+
 		if(options.showToggle){
 			folder.add(sprite, 'visible');
-			// obj.visible = options.hide.visible;
 		}
 
 		if(options.listen){
@@ -105,6 +109,8 @@ module.exports = function(lulu,game){
 			y.listen();
 			if(options.angle) angle.listen();
 		}
+
+		folder.add(sprite, 'alpha',0,1).step(0.05);
 	}
 
 	return function(sprite,options,subfolder){
