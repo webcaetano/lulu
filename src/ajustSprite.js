@@ -49,10 +49,8 @@ module.exports = function(lulu,game){
 		var pivoter = dragPointManager.create();
 		sprite.addChild(pivoter);
 		var init = {x:0,y:0};
+		var toggle = {visible:false};
 
-
-		// console.log(pivoter)
-		// console.log(pivoter.worldRotation)
 		pivoter.onChange.add(function(){
 		})
 
@@ -78,6 +76,11 @@ module.exports = function(lulu,game){
 
 		x.listen();
 		y.listen();
+
+		pivotFolder.add(toggle, 'visible').onChange(function(val){
+			pivoter.visible = val;
+		});
+		pivoter.visible = toggle.visible;
 	}
 
 	var setScale = function(sprite,options,folder){
