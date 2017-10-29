@@ -6,9 +6,7 @@ module.exports = function(game){
 	var self = {};
 
 	var createCarret = function(size=3){
-		var carret = game.add.group();
-
-		var bkg = game.add.graphics(0,0)
+		var carret = game.add.graphics(0,0)
 		.beginFill('0x555555',1)
 		// .drawCircle(0,0,size);
 		.drawPolygon([
@@ -18,10 +16,8 @@ module.exports = function(game){
 			{x:size/2,y:0},
 		]);
 
-		bkg.x = -bkg.width/2;
-		bkg.y = -bkg.height/2;
-
-		carret.add(bkg);
+		carret.pivot.x = size/2;
+		carret.pivot.y = size/2;
 
 		return carret;
 	}
@@ -29,14 +25,13 @@ module.exports = function(game){
 	var setBody = function(pointer,options){
 		var size = 20;
 
-		var bkg = pointer.bkg = game.add.graphics(0,0);
-		bkg.beginFill('0xFFFFFF',1)
+		pointer.beginFill('0xFFFFFF',1)
 		.lineStyle(1,'0x2E2E2E',1)
 		.drawCircle(0,0,size);
-		pointer.add(bkg);
 
 		_.times(4,function(i){
 			var angle = 0 + ((360/4)*i);
+
 			var pos = utils.radPos({x:0,y:0},angle-90,size-13)
 
 			var carret = createCarret();
@@ -44,23 +39,16 @@ module.exports = function(game){
 			carret.y = pos.y;
 			carret.angle = angle;
 
-			pointer.add(carret);
-		})
-
-
-		if(options.group) group.add(pointer);
+			pointer.addChild(carret);
+		});
 	}
 
 	var setBodyMini = function(pointer,options){
 		var size = 7;
 
-		var bkg = pointer.bkg = game.add.graphics(0,0);
-		bkg.beginFill('0xFF0000',0.3)
+		pointer.beginFill('0xFF0000',0.3)
 		.lineStyle(0.5,'0xFF0000',0.8)
 		.drawCircle(0,0,size);
-		pointer.add(bkg);
-
-		if(options.group) group.add(pointer);
 	}
 
 	var setDrag = function(pointer,options){
@@ -80,30 +68,9 @@ module.exports = function(game){
 		self.start = function(){
 			clear();
 
-			var diff = {
-				x:game.input.x - pointer.worldPosition.x,
-				y:game.input.y - pointer.worldPosition.y,
-			}
-
-			// var init = {
-			// 	x:pointer.x,
-			// 	y:pointer.y,
-			// }
-
-			// var initalWorldPos = {
-			// 	x:pointer.worldPosition.x,
-			// 	y:pointer.worldPosition.y,
-			// }
-
-			var multiplier = {
-				x:pointer.x/pointer.worldPosition.x,
-				y:pointer.y/pointer.worldPosition.y,
-			}
-
 			frames = game.make.group();
 			frames.update = function(){
-				pointer.x = (game.input.x - diff.x) * multiplier.x;
-				pointer.y = (game.input.y - diff.y) * multiplier.y;
+				pointer.onChange.dispatch();
 			};
 		}
 
@@ -111,20 +78,27 @@ module.exports = function(game){
 			clear();
 		}
 
-		utils.setBtnHold(bkg,function(){
+		if(!pointer.inputEnabled) pointer.inputEnabled = true;
+		if(pointer.input && pointer.input.enableDrag){
+			pointer.input.enableDrag();
+		}
+
+		utils.setBtnHold(pointer,function(){
 			if(!pointer.active) return;
 
 			valid = true;
 			self.start();
+			pointer.onPress.dispatch();
 		},function(){
 			if(!valid) return;
 
 			valid = false;
 			self.stop();
-		})
+			pointer.onRelease.dispatch();
+		});
 	}
 
-	self.create = function(x=0,y=0,group=null,options={}){
+	self.create = function(group=null,x=0,y=0,options={}){
 		var defaults = {
 			x,
 			y,
@@ -135,7 +109,10 @@ module.exports = function(game){
 
 		options = _.extend({},defaults,options);
 
-		var pointer = game.add.group();
+		var pointer = game.add.graphics(0,0);
+		pointer.onPress = new Phaser.Signal;
+		pointer.onRelease = new Phaser.Signal;
+		pointer.onChange = new Phaser.Signal;
 		pointer.active = options.active;
 
 		if(!options.mini){
@@ -147,6 +124,8 @@ module.exports = function(game){
 
 		pointer.x = options.x;
 		pointer.y = options.y;
+
+		if(options.group) options.group.add(pointer);
 
 		return pointer;
 	}
