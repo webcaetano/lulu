@@ -80,6 +80,33 @@ module.exports = function(lulu,game){
 		y.listen();
 	}
 
+	var setScale = function(sprite,options,folder){
+		var scaleFolder = folder.addFolder('scale');
+		var scaleX = scaleFolder.add(sprite.scale, 'x').step(0.05).onChange(function(val){
+			sprite.scale.y = val;
+		});
+			// var scaleY = scaleFolder.add(obj.scale, 'y').step(1);
+	}
+
+	var setBasics = function(sprite,options,folder){
+		var x = folder.add(sprite, 'x').step(1);
+		var y = folder.add(sprite, 'y').step(1);
+		if(options.angle) {
+			var angle = folder.add(sprite, 'angle').step(1);
+		}
+
+		if(options.showToggle){
+			folder.add(sprite, 'visible');
+			// obj.visible = options.hide.visible;
+		}
+
+		if(options.listen){
+			x.listen();
+			y.listen();
+			if(options.angle) angle.listen();
+		}
+	}
+
 	return function(sprite,options,subfolder){
 		lulu.new();
 		var panel = lulu.checkSubfolder(subfolder);
@@ -100,34 +127,10 @@ module.exports = function(lulu,game){
 
 		var folder = panel.addFolder('Ajust Object '+_.padStart(lulu.indAjust,3,'0'));
 
+		setBasics(sprite,options,folder);
 		if(options.drag) setDrag(sprite,options,folder);
-
-		var x = folder.add(sprite, 'x').step(1);
-		var y = folder.add(sprite, 'y').step(1);
-		if(options.angle) {
-			var angle = folder.add(sprite, 'angle').step(1);
-		}
-
-		if(options.showToggle){
-			folder.add(sprite, 'visible');
-			// obj.visible = options.hide.visible;
-		}
-
-		if(options.scale){
-			var scaleFolder = folder.addFolder('scale');
-			var scaleX = scaleFolder.add(sprite.scale, 'x').step(0.05).onChange(function(val){
-				sprite.scale.y = val;
-			});
-			// var scaleY = scaleFolder.add(obj.scale, 'y').step(1);
-		}
-
+		if(options.scale) setScale(sprite,options,folder);
 		setPivoter(sprite,options,folder);
-
-		if(options.listen){
-			x.listen();
-			y.listen();
-			if(options.angle) angle.listen();
-		}
 
 		if(options.open) folder.open();
 
