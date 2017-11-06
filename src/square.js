@@ -4,6 +4,28 @@ var _ = require('lodash');
 module.exports = function(lulu,game){
 	var dragPointManager = require('./dragPoint')(game);
 
+	var setBody = function(square,folder,options){
+		var {data,points} = square;
+
+		var body = square.body = game.add.graphics();
+
+		var updateRect = function(){
+			body.clear();
+
+			body.beginFill('0xFF0000',0.1)
+			.lineStyle(1,'0xFF0000',0.5);
+
+			body.drawRect(points[0].x,points[0].y,points[1].x-points[0].x,points[3].y-points[0].y)
+		}
+
+		updateRect();
+
+		square.add(body);
+
+		square.onChange.add(function(data){
+			updateRect();
+		},null,1);
+	}
 
 	var setPoints = function(square,folder,options){
 		var {data} = square;
@@ -93,6 +115,7 @@ module.exports = function(lulu,game){
 		var folder = square.folder = panel.addFolder('Ajust Object '+_.padStart(lulu.indAjust,3,'0'));
 
 		setPoints(square,folder,options);
+		setBody(square,folder,options);
 
 		if(options.open) folder.open();
 
