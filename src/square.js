@@ -68,10 +68,6 @@ module.exports = function(lulu,game){
 			point.y = val.y;
 			point.links = val.link;
 
-			// point.onChange.add(function(){
-			// 	console.log('x')
-			// });
-
 			return point;
 		});
 
@@ -90,6 +86,7 @@ module.exports = function(lulu,game){
 
 	var setData = function(square,folder,options){
 		var {data,points} = square;
+		var offset = {x:square.x,y:square.y};
 
 		var updatePoints = function(){
 			_.each(points,function(point){
@@ -100,23 +97,17 @@ module.exports = function(lulu,game){
 			});
 		}
 
-		square.onChange.add(function(){
-			data.height = points[3].y-points[0].y;
-		});
-
-		folder.add(data,'x').listen().onChange(function(val){
-
+		folder.add(square,'x').listen().onChange(function(val){
 			updatePoints();
 			square.onChange.dispatch();
 		});
 
-		folder.add(data,'y').listen().onChange(function(val){
-
+		folder.add(square,'y').listen().onChange(function(val){
 			updatePoints();
 			square.onChange.dispatch();
 		});
 
-		folder.add(data,'width').listen().onChange(function(val){
+		var width = folder.add(square.data,'width').listen().onChange(function(val){
 			points[1].x = val;
 			points[2].x = val;
 
@@ -124,7 +115,7 @@ module.exports = function(lulu,game){
 			square.onChange.dispatch();
 		});
 
-		folder.add(data,'height').listen().onChange(function(val){
+		var height = folder.add(square.data,'height').listen().onChange(function(val){
 			points[3].y = val;
 			points[2].y = val;
 
@@ -183,13 +174,28 @@ module.exports = function(lulu,game){
 			var topLeftPoint = getPoint.topLeft();
 			var topRightPoint = getPoint.topRight();
 			var bottomLeftPoint = getPoint.bottomLeft();
+			var bottomRightPoint = getPoint.bottomRight();
 
-			square.data = {
-				x:square.x+topLeftPoint.x,
-				y:square.y+topLeftPoint.y,
-				width:topRightPoint.x-topLeftPoint.x,
-				height:bottomLeftPoint.y-topLeftPoint.y,
-			};
+			square.data.width = topRightPoint.x-topLeftPoint.x;
+			square.data.height = bottomLeftPoint.y-topLeftPoint.y;
+
+			square.x = topLeftPoint.x+square.x;
+			square.y = topLeftPoint.y+square.y;
+
+			topLeftPoint.x = 0;
+			topLeftPoint.y = 0;
+
+			topRightPoint.x = square.data.width;
+			topRightPoint.y = 0;
+
+			bottomLeftPoint.x = 0;
+			bottomLeftPoint.y = square.data.height;
+
+			bottomRightPoint.x = square.data.width;
+			bottomRightPoint.y = square.data.height;
+
+			square.data.x = square.x;
+			square.data.y = square.y;
 		}
 	}
 
