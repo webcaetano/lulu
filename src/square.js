@@ -82,9 +82,48 @@ module.exports = function(lulu,game){
 					var p = points[linkID];
 					p[attr] = point[attr];
 
-					square.onChange.dispatch();
+	var setData = function(square,folder,options){
+		var {data,points} = square;
+
+		var updatePoints = function(){
+			_.each(points,function(point){
+				_.each(point.links,function(attr,linkID){
+					var p = points[linkID];
+					p[attr] = point[attr];
 				});
 			});
+		}
+
+		square.onChange.add(function(){
+			data.height = points[3].y-points[0].y;
+		});
+
+		folder.add(data,'x').listen().onChange(function(val){
+
+			updatePoints();
+			square.onChange.dispatch();
+		});
+
+		folder.add(data,'y').listen().onChange(function(val){
+
+			updatePoints();
+			square.onChange.dispatch();
+		});
+
+		folder.add(data,'width').listen().onChange(function(val){
+			points[1].x = val;
+			points[2].x = val;
+
+			updatePoints();
+			square.onChange.dispatch();
+		});
+
+		folder.add(data,'height').listen().onChange(function(val){
+			points[3].y = val;
+			points[2].y = val;
+
+			updatePoints();
+			square.onChange.dispatch();
 		});
 	}
 
@@ -116,6 +155,7 @@ module.exports = function(lulu,game){
 
 		setPoints(square,folder,options);
 		setBody(square,folder,options);
+		setData(square,folder,options);
 
 		if(options.open) folder.open();
 
