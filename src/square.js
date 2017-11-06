@@ -75,12 +75,18 @@ module.exports = function(lulu,game){
 			return point;
 		});
 
-
 		_.each(points,function(point){
-			_.each(point.links,function(attr,linkID){
-				point.onChange.add(function(){
+			point.onChange.add(function(){
+				_.each(point.links,function(attr,linkID){
 					var p = points[linkID];
 					p[attr] = point[attr];
+				});
+
+				square.updateData();
+				square.onChange.dispatch(square.data);
+			});
+		});
+	}
 
 	var setData = function(square,folder,options){
 		var {data,points} = square;
@@ -127,6 +133,65 @@ module.exports = function(lulu,game){
 		});
 	}
 
+	var setMethods = function(square,folder,options){
+		var {data,points} = square;
+
+		var getPoint = square.getPoint = {
+			topLeft(){
+				var current = null;
+				_.each(points,function(point,i){
+					if(current===null || (point.x<current.x || point.y<current.y)){
+						current = point;
+					}
+				});
+
+				return current;
+			},
+			topRight(){
+				var current = null;
+				_.each(points,function(point,i){
+					if(current===null || (point.x>current.x || point.y<current.y)){
+						current = point;
+					}
+				});
+
+				return current;
+			},
+			bottomLeft(){
+				var current = null;
+				_.each(points,function(point,i){
+					if(current===null || (point.x<current.x || point.y>current.y)){
+						current = point;
+					}
+				});
+
+				return current;
+			},
+			bottomRight(){
+				var current = null;
+				_.each(points,function(point,i){
+					if(current===null || (point.x>current.x || point.y>current.y)){
+						current = point;
+					}
+				});
+
+				return current;
+			}
+		}
+
+		square.updateData = function(){
+			var topLeftPoint = getPoint.topLeft();
+			var topRightPoint = getPoint.topRight();
+			var bottomLeftPoint = getPoint.bottomLeft();
+
+			square.data = {
+				x:square.x+topLeftPoint.x,
+				y:square.y+topLeftPoint.y,
+				width:topRightPoint.x-topLeftPoint.x,
+				height:bottomLeftPoint.y-topLeftPoint.y,
+			};
+		}
+	}
 
 	return function(sprite,options,subfolder){
 		lulu.new();
@@ -147,6 +212,8 @@ module.exports = function(lulu,game){
 		square.onChange = new Phaser.Signal;
 
 		var data = square.data = {
+			x:0,
+			y:0,
 			width:options.width,
 			height:options.height,
 		}
@@ -154,6 +221,7 @@ module.exports = function(lulu,game){
 		var folder = square.folder = panel.addFolder('Ajust Object '+_.padStart(lulu.indAjust,3,'0'));
 
 		setPoints(square,folder,options);
+		setMethods(square,folder,options);
 		setBody(square,folder,options);
 		setData(square,folder,options);
 
