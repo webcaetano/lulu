@@ -54,6 +54,8 @@ module.exports = function(game){
 
 	lulu.ajustSprite = require('./ajustSprite')(lulu,game);
 
+	lulu.ajust = require('./ajust')(lulu,game);
+
 	lulu.square = require('./square')(lulu,game)
 
 	/*/
