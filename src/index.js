@@ -56,7 +56,9 @@ module.exports = function(game){
 
 	lulu.ajust = require('./ajust')(lulu,game);
 
-	lulu.square = require('./square')(lulu,game)
+	lulu.square = require('./square')(lulu,game);
+
+	lulu.circle = require('./circle')(lulu,game);
 
 	/*/
 	//TEST
