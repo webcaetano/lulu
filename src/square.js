@@ -9,6 +9,8 @@ module.exports = function(lulu,game){
 
 		var body = square.body = game.add.graphics();
 
+		body.parent.sendToBack(body);
+
 		var updateRect = function(){
 			body.clear();
 
@@ -27,6 +29,32 @@ module.exports = function(lulu,game){
 		},null,1);
 	}
 
+	var setDrag = function(square,options,folder){
+		var {body,data} = square;
+		var midPoint = square.midPoint = dragPointManager.create(square,0,0,{
+			mini:false
+		});
+
+		midPoint.x = data.width/2;
+		midPoint.y = data.height/2;
+
+
+		midPoint.onChange.add(function(){
+			var {data} = square;
+			square.x = square.x + (midPoint.x-(data.width/2));
+			square.y = square.y + (midPoint.y-(data.height/2));
+
+			// midPoint.x = data.width/2;
+			// midPoint.y = data.height/2;
+
+			square.updateData();
+			square.onChange.dispatch(square.data);
+		});
+
+		midPoint.onPress.add(()=> square.onDragStart.dispatch());
+		midPoint.onRelease.add(()=> square.onDragStop.dispatch());
+	}
+
 	var setPoints = function(square,folder,options){
 		var {data} = square;
 		var points = square.points = _.map([
@@ -36,7 +64,7 @@ module.exports = function(lulu,game){
 				link:{
 					'1':'y',
 					'3':'x',
-				}
+				},
 			},
 			{
 				x:data.width,
@@ -44,7 +72,7 @@ module.exports = function(lulu,game){
 				link:{
 					'0':'y',
 					'2':'x',
-				}
+				},
 			},
 			{
 				x:data.width,
@@ -52,7 +80,7 @@ module.exports = function(lulu,game){
 				link:{
 					'3':'y',
 					'1':'x',
-				}
+				},
 			},
 			{
 				x:0,
@@ -60,10 +88,11 @@ module.exports = function(lulu,game){
 				link:{
 					'0':'x',
 					'2':'y',
-				}
+				},
 			}
 		],function(val,i){
 			var point = dragPointManager.create(square);
+			point.id = i;
 			point.x = val.x;
 			point.y = val.y;
 			point.links = val.link;
@@ -196,6 +225,11 @@ module.exports = function(lulu,game){
 
 			square.data.x = square.x;
 			square.data.y = square.y;
+
+			if(square.midPoint){
+				square.midPoint.x = square.data.width/2;
+				square.midPoint.y = square.data.height/2;
+			}
 		}
 	}
 
@@ -210,12 +244,15 @@ module.exports = function(lulu,game){
 			width:100,
 			height:100,
 			open:true,
+			drag:true,
 		};
 
 		options = _.extend({},defaults,options);
 
 		var square = game.add.group();
 		square.onChange = new Phaser.Signal;
+		square.onDragStart = new Phaser.Signal;
+		square.onDragStop = new Phaser.Signal;
 
 		var data = square.data = {
 			x:0,
@@ -230,6 +267,7 @@ module.exports = function(lulu,game){
 		setMethods(square,folder,options);
 		setBody(square,folder,options);
 		setData(square,folder,options);
+		if(options.drag) setDrag(square,folder,options);
 
 		if(options.open) folder.open();
 
