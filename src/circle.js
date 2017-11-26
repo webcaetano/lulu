@@ -1,5 +1,6 @@
 var Phaser = require('phaser');
 var _ = require('lodash');
+var utils = require('./utils');
 
 module.exports = function(lulu,game){
 	var dragPointManager = require('./dragPoint')(game);
@@ -21,7 +22,7 @@ module.exports = function(lulu,game){
 			body.beginFill('0xFF0000',0.1)
 			.lineStyle(1,'0xFF0000',0.5);
 
-			body.drawCircle(midPoint.x,midPoint.y,data.radius)
+			body.drawCircle(midPoint.x,midPoint.y,data.radius*2)
 		}
 
 		updateCircle();
@@ -49,102 +50,52 @@ module.exports = function(lulu,game){
 		midPoint.onRelease.add(()=> circle.onDragStop.dispatch());
 	}
 
-	// var setPoints = function(circle,folder,options){
-	// 	var {data} = circle;
-	// 	var points = circle.points = _.map([
-	// 		{
-	// 			x:0,
-	// 			y:0,
-	// 			link:{
-	// 				'1':'y',
-	// 				'3':'x',
-	// 			},
-	// 		},
-	// 		{
-	// 			x:data.width,
-	// 			y:0,
-	// 			link:{
-	// 				'0':'y',
-	// 				'2':'x',
-	// 			},
-	// 		},
-	// 		{
-	// 			x:data.width,
-	// 			y:data.height,
-	// 			link:{
-	// 				'3':'y',
-	// 				'1':'x',
-	// 			},
-	// 		},
-	// 		{
-	// 			x:0,
-	// 			y:data.height,
-	// 			link:{
-	// 				'0':'x',
-	// 				'2':'y',
-	// 			},
-	// 		}
-	// 	],function(val,i){
-	// 		var point = dragPointManager.create(circle);
-	// 		point.id = i;
-	// 		point.x = val.x;
-	// 		point.y = val.y;
-	// 		point.links = val.link;
+	var setPoints = function(circle,folder,options){
+		var {data} = circle;
+		var radLine = circle.radLine = game.add.graphics(0,0);
+		radLine.lineStyle(1,'0xFF0000',0.5);
+		radLine.moveTo(0,0);
+		radLine.lineTo(data.radius,0);
+		circle.add(radLine);
 
-	// 		return point;
-	// 	});
 
-	// 	_.each(points,function(point){
-	// 		point.onChange.add(function(){
-	// 			_.each(point.links,function(attr,linkID){
-	// 				var p = points[linkID];
-	// 				p[attr] = point[attr];
-	// 			});
+		var radPoint = circle.radPoint = dragPointManager.create(circle,0,0,{
+			vertical:false
+		});
+		radPoint.x = data.radius;
+		radPoint.y = 0;
 
-	// 			circle.updateData();
-	// 			circle.onChange.dispatch(circle.data);
-	// 		});
-	// 	});
-	// }
+		radPoint.onChange.add(function(){
+			circle.data.radius = utils.dist({x:0,y:0},radPoint);
+			circle.onChange.dispatch();
+		})
+
+		circle.onChange.add(function(){
+			radLine.clear();
+			radLine.lineStyle(1,'0xFF0000',0.5);
+			radLine.moveTo(0,0);
+			radLine.lineTo(data.radius,0);
+
+			radPoint.x = data.radius;
+			radPoint.y = 0;
+		});
+	}
 
 	var setData = function(circle,folder,options){
 		var {data,points} = circle;
 		var offset = {x:circle.x,y:circle.y};
 
-		// var updatePoints = function(){
-		// 	_.each(points,function(point){
-		// 		_.each(point.links,function(attr,linkID){
-		// 			var p = points[linkID];
-		// 			p[attr] = point[attr];
-		// 		});
-		// 	});
-		// }
-
 		folder.add(circle,'x').listen().onChange(function(val){
-			// updatePoints();
 			circle.onChange.dispatch();
 		});
 
 		folder.add(circle,'y').listen().onChange(function(val){
-			// updatePoints();
 			circle.onChange.dispatch();
 		});
 
-		// var width = folder.add(circle.data,'width').listen().onChange(function(val){
-		// 	points[1].x = val;
-		// 	points[2].x = val;
-
-		// 	updatePoints();
-		// 	circle.onChange.dispatch();
-		// });
-
-		// var height = folder.add(circle.data,'height').listen().onChange(function(val){
-		// 	points[3].y = val;
-		// 	points[2].y = val;
-
-		// 	updatePoints();
-		// 	circle.onChange.dispatch();
-		// });
+		var radius = folder.add(circle.data,'radius').listen().onChange(function(val){
+			circle.onChange.dispatch();
+		});
 	}
 
 	var setMethods = function(circle,folder,options){
@@ -167,7 +118,7 @@ module.exports = function(lulu,game){
 		var defaults = {
 			x:0,
 			y:0,
-			radius:100,
+			radius:60,
 			open:true,
 			drag:true,
 		};
@@ -187,7 +138,7 @@ module.exports = function(lulu,game){
 
 		var folder = circle.folder = panel.addFolder('Ajust Object '+_.padStart(lulu.indAjust,3,'0'));
 
-		// setPoints(circle,folder,options);
+		setPoints(circle,folder,options);
 		setMethods(circle,folder,options);
 		setBody(circle,folder,options);
 		setData(circle,folder,options);
