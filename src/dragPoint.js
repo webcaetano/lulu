@@ -102,6 +102,8 @@ module.exports = function(game){
 			self.stop();
 			pointer.onRelease.dispatch();
 		});
+
+		pointer.input.setDragLock(options.horizontal,options.vertical);
 	}
 
 	self.create = function(group=null,x=0,y=0,options={}){
@@ -111,6 +113,8 @@ module.exports = function(game){
 			group,
 			active:true,
 			mini:true,
+			horizontal:true,
+			vertical:true,
 		}
 
 		options = _.extend({},defaults,options);
