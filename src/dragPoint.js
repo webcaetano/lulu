@@ -7,7 +7,7 @@ module.exports = function(game){
 
 	var createCarret = function(size=3){
 		var carret = game.add.graphics(0,0)
-		.beginFill('0x555555',1)
+		.beginFill('0x5E1212',0.8)
 		// .drawCircle(0,0,size);
 		.drawPolygon([
 			{x:size/2,y:0},
@@ -23,17 +23,17 @@ module.exports = function(game){
 	}
 
 	var setBody = function(pointer,options){
-		var size = 20;
+		var size = 15;
 		var bkg = game.add.graphics(0,0)
 
-		bkg.beginFill('0xFFFFFF',1)
-		.lineStyle(1,'0x2E2E2E',1)
+		bkg.beginFill('0xFF0000',0.5)
+		.lineStyle(1,'0xFF0000',0.7)
 		.drawCircle(0,0,size);
 
 		_.times(4,function(i){
 			var angle = 0 + ((360/4)*i);
 
-			var pos = utils.radPos({x:0,y:0},angle-90,size-13)
+			var pos = utils.radPos({x:0,y:0},angle-90,size-10)
 
 			var carret = createCarret();
 			carret.x = pos.x;
