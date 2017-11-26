@@ -12,6 +12,7 @@
   "main": "build/phaser-dev-tools.js",
   "devDependencies": {
     "babel-loader": "^5.3.2",
+    "git-rev-sync": "^1.9.1",
     "nodemon": "^1.11.0",
     "tojson-loader": "^1.0.4",
     "webpack": "3.0.0"

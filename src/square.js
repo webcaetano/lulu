@@ -199,7 +199,7 @@ module.exports = function(lulu,game){
 		}
 	}
 
-	return function(sprite,options,subfolder){
+	return function(options,subfolder){
 		lulu.new();
 		var panel = lulu.checkSubfolder(subfolder);
 		lulu.indAjust++;
@@ -212,7 +212,7 @@ module.exports = function(lulu,game){
 			open:true,
 		};
 
-		options = _.extend({},options,defaults);
+		options = _.extend({},defaults,options);
 
 		var square = game.add.group();
 		square.onChange = new Phaser.Signal;

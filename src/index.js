@@ -1,8 +1,8 @@
 var Phaser = require('phaser');
 var _ = require('lodash');
-var version = require('./version.json');
+var versionData = require('./version.json');
 
-console.log('%c  Lulu '+version+'  ', 'font-size: 12px; font-weight:bold; background: #000000; color: #FF00AE');
+console.log('%c  Lulu '+versionData.version+' '+versionData.hash+'  ', 'font-size: 12px; font-weight:bold; background: #000000; color: #FF00AE');
 
 module.exports = function(game){
 	var lulu = {
