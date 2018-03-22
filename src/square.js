@@ -231,6 +231,13 @@ module.exports = function(lulu,game){
 				square.midPoint.y = square.data.height/2;
 			}
 		}
+
+		square.refresh = function(){
+			square.updateData();
+			square.onChange.dispatch(square.data);
+		}
+
+		square.updateData();
 	}
 
 	return function(options,subfolder){
